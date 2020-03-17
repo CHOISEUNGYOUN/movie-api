@@ -1,11 +1,22 @@
 import json
 
-from django.http  import JsonResponse
-from django.views import View
+from django.http                  import JsonResponse
+from django.views                 import View
 
 from . import models
 
+class MissingRequiredValue(Exception):
+        pass
+
 class MovieListView(View):
+
+    REQUIRED_VALUES = (
+        "title",
+        "year",
+        "rating",
+        "summary",
+        "genre",
+    )
 
     def get(self, request):
         page        = int(request.GET.get('page', 1))
@@ -76,3 +87,39 @@ class MovieListView(View):
             status = 200,
             safe   = False
         )
+    
+    def post(self, request):
+        data = json.loads(request.body)
+        try:
+            for v in self.REQUIRED_VALUES:
+                if v not in data:
+                    raise MissingRequiredValue
+
+            new_m = models.Movie.objects.create(
+                url                       = data.get("url",""),
+                title                     = data["title"],
+                title_english             = data.get("title_english",""),
+                title_long                = data.get("title_long",""),
+                year                      = int(data["year"]),
+                rating                    = int(data["rating"]),
+                runtime                   = int(data.get("runtime",0)),
+                summary                   = data["summary"],
+                description_full          = data.get("description_full",""),
+                synopsis                  = data.get("synopsis",""),
+                language                  = data.get("language",""),
+                mpa_rating                = data.get("mpa_rating",""),
+                background_image          = data.get("background_image",""),
+                background_image_original = data.get("background_image_original",""),
+                small_cover_image         = data.get("small_cover_image",""),
+                medium_cover_image        = data.get("medium_cover_image",""),
+                large_cover_image         = data.get("large_cover_image",""),
+            )
+            if models.Genre.objects.filter(genres=data["genre"]).exists():
+                genre = models.Genre.objects.get(genres=data["genre"])
+            else:
+                genre = models.Genre.objects.create(genres=data["genre"])
+            new_m.genres.add(genre)
+
+            return JsonResponse({"MESSAGE": "SUCCESS"}, status=200)
+        except MissingRequiredValue:
+            return JsonResponse({"MESSAGE": "NO_REQUIRED_VALUE_IN_DATA"}, status=400)
