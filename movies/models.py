@@ -40,8 +40,8 @@ class Movie(models.Model):
     medium_cover_image        = models.URLField(max_length=500, null=True)
     large_cover_image         = models.URLField(max_length=500, null=True)
     genres                    = models.ManyToManyField("Genre")
-    torrents                  = models.ManyToManyField("Torrent")
     date_uploaded             = models.DateTimeField(auto_now_add=True)
+    date_added                = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
@@ -59,7 +59,7 @@ class Genre(models.Model):
         return self.genres
 
 class Torrent(models.Model):
-
+    movie         = models.ForeignKey("Movie", on_delete=models.CASCADE, null=True)
     url           = models.URLField(max_length=500, default='')
     quality       = models.CharField(max_length=20, default='')
     type          = models.CharField(max_length=20, default='')

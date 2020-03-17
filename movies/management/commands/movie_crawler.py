@@ -16,7 +16,7 @@ class Command(BaseCommand):
         genres = movie_models.Genre.objects.all()
         torrents = movie_models.Torrent.objects.all()
         page_url = "https://yts.mx/api/v2/list_movies.json"
-        movie_page = requests.get(page_url+f"?page=page")
+        movie_page = requests.get(page_url+f"?page={page}")
         time.sleep(2)
         json_data = movie_page.json()["data"]
         movie_data = json_data["movies"]
@@ -53,6 +53,7 @@ class Command(BaseCommand):
                     new_t = movie_models.Torrent.objects.get(url=t["url"])
                 else:
                     new_t = movie_models.Torrent.objects.create(
+                        movie = new_m,
                         url = t["url"],
                         quality = t["quality"],
                         type = t["type"],
@@ -61,5 +62,3 @@ class Command(BaseCommand):
                         size = t["size"],
                         size_bytes = t["size_bytes"],
                     )
-                new_m.torrents.add(new_t)
-
