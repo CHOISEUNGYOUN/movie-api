@@ -45,7 +45,7 @@ class MovieListView(View):
         if order_by == "desc":
             filtered_movie = filtered_movie.order_by(f"-{sort_by}")
         else:
-            filtered_movie = filtered_movie.order_by("{sort_by}")
+            filtered_movie = filtered_movie.order_by(f"{sort_by}")
         if page == 1:
             offset = 0
             end    = limit
