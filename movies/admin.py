@@ -7,5 +7,13 @@ class MovieAdimin(admin.ModelAdmin):
     
     filter_horizontal = (
         "genres",
-        "torrents",
+        "torrents"
     )
+
+@admin.register(models.Torrent)
+class TorrentAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(models.Genre)
+class GenreAdmin(admin.ModelAdmin):
+    pass

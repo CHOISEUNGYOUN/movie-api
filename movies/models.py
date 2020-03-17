@@ -5,18 +5,20 @@ from languages.fields import LanguageField
 
 class Movie(models.Model):
 
-    MPA_G = "G"
-    MPA_PG = "PG"
-    MPA_PG_13 = "PG-13"
-    MPA_R = "R"
-    MPA_NC_17 = "NC-17"
+    MPA_RATINGS = {
+        "G"     : "G",
+        "PG"    : "PG",
+        "PG-13" : "PG-13",
+        "R"     : "R",
+        "NC-17" : "NC-17"
+    }
 
     MPA_CHOICES = (
-        (MPA_G, "G"),
-        (MPA_PG, "PG"),
-        (MPA_PG_13, "PG-13"),
-        (MPA_R, "R"),
-        (MPA_NC_17, "NC-17")
+        (MPA_RATINGS["G"],     "G"),
+        (MPA_RATINGS["PG"],    "PG"),
+        (MPA_RATINGS["PG-13"], "PG-13"),
+        (MPA_RATINGS["R"],     "R"),
+        (MPA_RATINGS["NC-17"], "NC-17")
     )
     
     url                       = models.URLField(max_length=500, null=True)
@@ -31,7 +33,7 @@ class Movie(models.Model):
     description_full          = models.TextField(null=True, default='')
     synopsis                  = models.TextField(null=True)
     language                  = LanguageField(max_length=20, default="English")
-    npa_rating                = models.CharField(max_length=10, choices=MPA_CHOICES, default='')
+    mpa_rating                = models.CharField(max_length=10, choices=MPA_CHOICES, default=MPA_RATINGS["R"])
     background_image          = models.URLField(max_length=500, null=True)
     background_image_original = models.URLField(max_length=500, null=True)
     small_cover_image         = models.URLField(max_length=500, null=True)
@@ -45,7 +47,7 @@ class Movie(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.headline)
+        self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
 class Genre(models.Model):
